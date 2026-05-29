@@ -38,7 +38,7 @@
         radial-gradient(circle at 82% 16%, rgba(56, 240, 255, 0.14), transparent 46%),
         radial-gradient(circle at 50% 92%, rgba(184, 255, 106, 0.1), transparent 42%),
         linear-gradient(120deg, var(--bg-a), var(--bg-b) 50%, var(--bg-c));
-      overflow-x: hidden;
+      overflow: hidden;
     }
 
     .spark {
@@ -86,7 +86,11 @@
       position: relative;
       z-index: 1;
       width: min(1080px, 94vw);
-      margin: 24px auto 44px;
+      height: calc(100vh - 24px);
+      margin: 12px auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
       animation: reveal 0.8s ease-out both;
     }
 
@@ -107,10 +111,11 @@
       border: 2px solid rgba(255, 255, 255, 0.4);
       border-radius: var(--radius);
       box-shadow: var(--shadow), 0 0 0 4px rgba(255, 255, 255, 0.08) inset;
-      padding: 20px 20px;
+      padding: 14px 16px;
       backdrop-filter: blur(8px);
       position: relative;
       overflow: hidden;
+      flex-shrink: 0;
     }
 
     .hero::before {
@@ -166,17 +171,18 @@
     }
 
     .sub {
-      margin: 10px 0 0;
+      margin: 6px 0 0;
       color: #ebf4ff;
       opacity: 0.95;
-      font-size: 1rem;
+      font-size: 0.94rem;
     }
 
     .grid {
       display: grid;
-      gap: 14px;
-      margin-top: 14px;
+      gap: 10px;
       grid-template-columns: 1fr;
+      min-height: 0;
+      flex: 1;
     }
 
     @media (min-width: 920px) {
@@ -191,10 +197,12 @@
       background:
         linear-gradient(145deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.06));
       box-shadow: var(--shadow), 0 0 0 1px rgba(255, 255, 255, 0.18) inset;
-      padding: 16px;
+      padding: 12px;
       backdrop-filter: blur(8px);
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       animation: cardSlideIn 0.6s cubic-bezier(.2, .8, .2, 1) both;
+      min-height: 0;
+      overflow: auto;
     }
 
     .card:nth-of-type(2) {
@@ -218,7 +226,7 @@
     }
 
     .title {
-      margin: 0 0 12px;
+      margin: 0 0 8px;
       font-weight: 700;
       color: #fefefe;
       font-size: 1.02rem;
@@ -227,8 +235,8 @@
 
     label {
       display: block;
-      margin: 10px 0 6px;
-      font-size: 0.92rem;
+      margin: 8px 0 4px;
+      font-size: 0.88rem;
       opacity: 0.95;
     }
 
@@ -247,15 +255,16 @@
       border: 1px solid rgba(255, 255, 255, 0.28);
       border-radius: 12px;
       background: rgba(8, 10, 32, 0.58);
-      padding: 10px 12px;
+      padding: 8px 10px;
       outline: none;
       transition: border-color 0.16s ease, transform 0.16s ease;
     }
 
     textarea {
       resize: vertical;
-      min-height: 170px;
-      line-height: 1.5;
+      min-height: 98px;
+      max-height: 160px;
+      line-height: 1.35;
     }
 
     textarea:focus,
@@ -269,8 +278,8 @@
     .row {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 10px;
-      margin-top: 10px;
+      gap: 8px;
+      margin-top: 8px;
     }
 
     @media (min-width: 640px) {
@@ -286,14 +295,20 @@
     .btns {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 12px;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .result-actions {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
     }
 
     button {
       border: 1px solid rgba(255, 255, 255, 0.25);
       border-radius: 999px;
-      padding: 10px 16px;
+      padding: 8px 14px;
       cursor: pointer;
       font-weight: 700;
       letter-spacing: 0.3px;
@@ -319,8 +334,8 @@
       position: relative;
       overflow: hidden;
       width: 100%;
-      padding: 14px 18px;
-      font-size: 1.05rem;
+      padding: 11px 16px;
+      font-size: 0.98rem;
       letter-spacing: 0.8px;
       background: linear-gradient(95deg, #ff2f72, #ff6200 38%, #ffb703 66%, #ffe66d);
       color: #1f0a00;
@@ -406,10 +421,14 @@
     }
 
     .status {
-      margin-top: 10px;
-      min-height: 24px;
-      font-size: 0.92rem;
+      margin-top: 8px;
+      min-height: 20px;
+      line-height: 20px;
+      font-size: 0.86rem;
       color: #ecf4ff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .status.error {
@@ -424,12 +443,12 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      margin-top: 8px;
-      padding: 6px 10px;
+      margin-top: 6px;
+      padding: 5px 9px;
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.15);
       border: 1px solid rgba(255, 255, 255, 0.24);
-      font-size: 0.84rem;
+      font-size: 0.8rem;
     }
 
     #seedBadge {
@@ -438,24 +457,24 @@
 
     .meta-grid {
       display: grid;
-      gap: 10px;
-      margin-top: 10px;
+      gap: 8px;
+      margin-top: 8px;
       grid-template-columns: 1fr;
     }
 
     .meta-item {
       border: 1px solid rgba(255, 255, 255, 0.18);
       border-radius: 14px;
-      padding: 8px 10px 10px;
+      padding: 7px 9px 9px;
       background: rgba(255, 255, 255, 0.06);
     }
 
     .etherscan-panel {
-      margin-top: 12px;
+      margin-top: 8px;
       border-radius: 16px;
       border: 1px solid rgba(56, 240, 255, 0.5);
       background: linear-gradient(145deg, rgba(0, 178, 255, 0.16), rgba(12, 18, 52, 0.52));
-      padding: 12px;
+      padding: 10px;
       box-shadow: 0 10px 24px rgba(0, 178, 255, 0.2), 0 0 20px rgba(56, 240, 255, 0.18);
     }
 
@@ -464,7 +483,7 @@
       justify-content: space-between;
       align-items: center;
       gap: 10px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
 
     .etherscan-title {
@@ -503,7 +522,7 @@
     }
 
     .meta-actions {
-      margin-top: 10px;
+      margin-top: 8px;
       display: flex;
       justify-content: flex-start;
     }
@@ -536,7 +555,7 @@
       margin: 0;
       padding: 0;
       display: grid;
-      gap: 8px;
+      gap: 6px;
     }
 
     .result-list.is-drawing {
@@ -572,7 +591,7 @@
     }
 
     .result-item {
-      padding: 10px 12px;
+      padding: 8px 10px;
       border-radius: 12px;
       background: linear-gradient(118deg, rgba(255, 209, 102, 0.3), rgba(255, 77, 141, 0.24));
       border: 1px solid rgba(255, 255, 255, 0.22);
@@ -638,8 +657,8 @@
 
     .footer-note {
       opacity: 0.9;
-      margin-top: 10px;
-      font-size: 0.84rem;
+      margin-top: 8px;
+      font-size: 0.78rem;
     }
 
     .mono {
@@ -668,6 +687,27 @@
       .rank,
       .name {
         transform: none;
+      }
+    }
+
+    @media (max-width: 920px), (max-height: 760px) {
+      body {
+        overflow-y: auto;
+        overflow-x: hidden;
+      }
+
+      .wrap {
+        height: auto;
+        min-height: unset;
+        margin: 14px auto 20px;
+      }
+
+      .grid {
+        flex: initial;
+      }
+
+      .card {
+        overflow: visible;
       }
     }
   </style>
@@ -739,7 +779,6 @@
 
         <div class="btns">
           <button class="primary cta-run" id="runBtn" type="button">開始抽獎</button>
-          <button class="ghost" id="clearBtn">清空結果</button>
         </div>
 
         <div id="status" class="status"></div>
@@ -748,7 +787,10 @@
       <article class="card">
         <div class="btns" style="margin-top: 0; margin-bottom: 12px; justify-content: space-between;">
           <h2 class="title" style="margin: 0;">抽獎結果</h2>
-          <button class="ghost" id="copyBtn" type="button">複製結果（僅名字）</button>
+          <div class="result-actions">
+            <button class="ghost" id="copyBtn" type="button">複製結果（僅名字）</button>
+            <button class="ghost" id="clearBtn" type="button">清空結果</button>
+          </div>
         </div>
         <div id="seedBadge" class="pill" style="display:none;"></div>
         <ul id="results" class="result-list"></ul>
@@ -1108,7 +1150,7 @@
       resultsEl.innerHTML = '';
       lastResultNames = [];
       seedBadgeEl.style.display = 'none';
-      setStatus('結果已清空。', '');
+      setStatus('', '');
     });
 
     const namesFromQuery = getNamesFromQueryParams();
