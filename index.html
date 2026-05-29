@@ -11,6 +11,8 @@
       --bg-a: #070710;
       --bg-b: #1b0e37;
       --bg-c: #0f2a5f;
+      --viewport-top-gap: max(14px, env(safe-area-inset-top));
+      --viewport-bottom-gap: 12px;
       --flare-red: #ff3a2f;
       --flare-orange: #ff8a00;
       --gold: #ffd166;
@@ -31,6 +33,7 @@
     body {
       margin: 0;
       min-height: 100dvh;
+      padding: var(--viewport-top-gap) 0 var(--viewport-bottom-gap);
       font-family: "Chakra Petch", "Noto Sans TC", sans-serif;
       color: var(--ink);
       background:
@@ -86,8 +89,8 @@
       position: relative;
       z-index: 1;
       width: min(1080px, 94vw);
-      height: calc(100dvh - max(12px, env(safe-area-inset-top)) - 12px);
-      margin: max(12px, env(safe-area-inset-top)) auto 12px;
+      height: calc(100dvh - var(--viewport-top-gap) - var(--viewport-bottom-gap));
+      margin: 0 auto;
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -727,7 +730,7 @@
       .wrap {
         height: auto;
         min-height: unset;
-        margin: max(14px, env(safe-area-inset-top)) auto 20px;
+        margin: 0 auto;
       }
 
       .grid {
