@@ -1,0 +1,852 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>大抽獎</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bungee&family=Chakra+Petch:wght@400;600;700&display=swap');
+
+    :root {
+      --bg-a: #070710;
+      --bg-b: #1b0e37;
+      --bg-c: #0f2a5f;
+      --gold: #ffd166;
+      --pink: #ff4d8d;
+      --cyan: #38f0ff;
+      --lime: #b8ff6a;
+      --ink: #f7f7ff;
+      --glass: rgba(255, 255, 255, 0.12);
+      --glass-strong: rgba(255, 255, 255, 0.2);
+      --shadow: 0 18px 60px rgba(0, 0, 0, 0.45);
+      --radius: 20px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Chakra Petch", "Noto Sans TC", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 15% 10%, rgba(255, 77, 141, 0.28), transparent 40%),
+        radial-gradient(circle at 82% 18%, rgba(56, 240, 255, 0.2), transparent 44%),
+        radial-gradient(circle at 50% 90%, rgba(184, 255, 106, 0.16), transparent 40%),
+        linear-gradient(120deg, var(--bg-a), var(--bg-b) 50%, var(--bg-c));
+      overflow-x: hidden;
+    }
+
+    .spark {
+      position: fixed;
+      width: 340px;
+      height: 340px;
+      border-radius: 50%;
+      filter: blur(55px);
+      opacity: 0.42;
+      z-index: 0;
+      animation: drift 8s ease-in-out infinite alternate;
+    }
+
+    .spark.s1 {
+      top: -90px;
+      left: -80px;
+      background: #ff4d8d;
+    }
+
+    .spark.s2 {
+      right: -70px;
+      top: 20%;
+      background: #38f0ff;
+      animation-delay: 1.2s;
+    }
+
+    .spark.s3 {
+      bottom: -110px;
+      left: 30%;
+      background: #ffd166;
+      animation-delay: 2.2s;
+    }
+
+    @keyframes drift {
+      from {
+        transform: translateY(-8px) scale(0.96);
+      }
+      to {
+        transform: translateY(12px) scale(1.08);
+      }
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      width: min(1040px, 94vw);
+      margin: 24px auto 44px;
+      animation: reveal 0.8s ease-out both;
+    }
+
+    @keyframes reveal {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(255, 77, 141, 0.24), rgba(56, 240, 255, 0.2));
+      border: 2px solid rgba(255, 255, 255, 0.25);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px 20px;
+      backdrop-filter: blur(8px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::after {
+      content: "";
+      position: absolute;
+      inset: -30% auto auto -30%;
+      width: 260px;
+      height: 260px;
+      background: radial-gradient(circle, rgba(255, 209, 102, 0.45), transparent 70%);
+      transform: rotate(-8deg);
+      pointer-events: none;
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Bungee", "Chakra Petch", sans-serif;
+      letter-spacing: 2px;
+      color: #fff3d4;
+      text-shadow: 0 0 16px rgba(255, 209, 102, 0.7);
+      font-size: clamp(1.65rem, 4vw, 2.7rem);
+      line-height: 1.1;
+    }
+
+    .sub {
+      margin: 10px 0 0;
+      color: #ebf4ff;
+      opacity: 0.95;
+      font-size: 1rem;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+      margin-top: 14px;
+      grid-template-columns: 1fr;
+    }
+
+    @media (min-width: 920px) {
+      .grid {
+        grid-template-columns: 1.4fr 1fr;
+      }
+    }
+
+    .card {
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: var(--radius);
+      background: var(--glass);
+      box-shadow: var(--shadow);
+      padding: 16px;
+      backdrop-filter: blur(8px);
+    }
+
+    .title {
+      margin: 0 0 12px;
+      font-weight: 700;
+      color: #fefefe;
+      font-size: 1.02rem;
+      letter-spacing: 0.5px;
+    }
+
+    label {
+      display: block;
+      margin: 10px 0 6px;
+      font-size: 0.92rem;
+      opacity: 0.95;
+    }
+
+    textarea,
+    input,
+    select,
+    button {
+      font: inherit;
+      color: #fefeff;
+    }
+
+    textarea,
+    input,
+    select {
+      width: 100%;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      border-radius: 12px;
+      background: rgba(8, 10, 32, 0.58);
+      padding: 10px 12px;
+      outline: none;
+      transition: border-color 0.16s ease, transform 0.16s ease;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 170px;
+      line-height: 1.5;
+    }
+
+    textarea:focus,
+    input:focus,
+    select:focus {
+      border-color: var(--cyan);
+      transform: translateY(-1px);
+      box-shadow: 0 0 0 3px rgba(56, 240, 255, 0.18);
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    @media (min-width: 640px) {
+      .row.two {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .row.three {
+        grid-template-columns: 1fr 1fr 1fr;
+      }
+    }
+
+    .btns {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    button {
+      border: none;
+      border-radius: 999px;
+      padding: 10px 16px;
+      cursor: pointer;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      transition: transform 0.15s ease, filter 0.15s ease;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      filter: saturate(1.1);
+    }
+
+    .primary {
+      background: linear-gradient(90deg, var(--pink), #ff8f45);
+      color: white;
+      box-shadow: 0 8px 24px rgba(255, 77, 141, 0.42);
+    }
+
+    .cta-run {
+      width: 100%;
+      padding: 14px 18px;
+      font-size: 1.05rem;
+      letter-spacing: 0.8px;
+      background: linear-gradient(90deg, #ff2f72, #ff9f1c 52%, #ffe66d);
+      color: #1f0a00;
+      text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
+      box-shadow:
+        0 14px 28px rgba(255, 77, 141, 0.46),
+        0 0 0 2px rgba(255, 255, 255, 0.2) inset;
+      animation: ctaPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes ctaPulse {
+      0%,
+      100% {
+        transform: translateY(0);
+        filter: saturate(1);
+      }
+      50% {
+        transform: translateY(-1px);
+        filter: saturate(1.1);
+      }
+    }
+
+    .ghost {
+      background: rgba(255, 255, 255, 0.14);
+      color: #f7f7ff;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+    }
+
+    .ether {
+      background: linear-gradient(90deg, #00c9a7, #00b2ff);
+      color: #00131e;
+      box-shadow: 0 8px 24px rgba(0, 178, 255, 0.35);
+    }
+
+    .status {
+      margin-top: 10px;
+      min-height: 24px;
+      font-size: 0.92rem;
+      color: #ecf4ff;
+    }
+
+    .status.error {
+      color: #ffc0ce;
+    }
+
+    .status.ok {
+      color: #d3ffd1;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 8px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      font-size: 0.84rem;
+    }
+
+    #seedBadge {
+      margin-bottom: 12px;
+    }
+
+    .meta-grid {
+      display: grid;
+      gap: 10px;
+      margin-top: 10px;
+      grid-template-columns: 1fr;
+    }
+
+    .meta-item {
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 14px;
+      padding: 8px 10px 10px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .etherscan-panel {
+      margin-top: 12px;
+      border-radius: 16px;
+      border: 1px solid rgba(56, 240, 255, 0.35);
+      background: linear-gradient(145deg, rgba(0, 178, 255, 0.13), rgba(12, 18, 52, 0.5));
+      padding: 12px;
+      box-shadow: 0 8px 22px rgba(0, 178, 255, 0.18);
+    }
+
+    .etherscan-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .etherscan-title {
+      margin: 0;
+      font-size: 0.95rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      color: #a9f5ff;
+    }
+
+    .etherscan-hint {
+      margin: 0;
+      font-size: 0.8rem;
+      opacity: 0.92;
+    }
+
+    .meta-item label {
+      margin-top: 0;
+    }
+
+    .meta-link {
+      display: none;
+      margin-top: 8px;
+      text-decoration: none;
+      color: #ecf9ff;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      border-radius: 999px;
+      padding: 6px 10px;
+      font-size: 0.84rem;
+      width: fit-content;
+    }
+
+    .meta-link:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .meta-actions {
+      margin-top: 10px;
+      display: flex;
+      justify-content: flex-start;
+    }
+
+    .fetch-in-panel {
+      white-space: nowrap;
+      font-size: 0.86rem;
+      padding: 9px 12px;
+    }
+
+    @media (max-width: 700px) {
+      .etherscan-head {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .fetch-in-panel {
+        width: 100%;
+      }
+    }
+
+    @media (min-width: 860px) {
+      .meta-grid {
+        grid-template-columns: 1.3fr 1fr 1fr;
+      }
+    }
+
+    .result-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: grid;
+      gap: 8px;
+    }
+
+    .result-item {
+      padding: 10px 12px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(255, 209, 102, 0.2), rgba(255, 77, 141, 0.18));
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      animation: pop 0.3s ease both;
+    }
+
+    .result-item:nth-child(2n) {
+      background: linear-gradient(135deg, rgba(56, 240, 255, 0.2), rgba(255, 255, 255, 0.1));
+    }
+
+    @keyframes pop {
+      from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .rank {
+      font-family: "Bungee", sans-serif;
+      color: #fff2be;
+      font-size: 0.94rem;
+      min-width: 66px;
+    }
+
+    .name {
+      font-weight: 700;
+      font-size: 1rem;
+      text-align: right;
+      color: #f8fcff;
+      overflow-wrap: anywhere;
+      margin-left: 8px;
+    }
+
+    .footer-note {
+      opacity: 0.9;
+      margin-top: 10px;
+      font-size: 0.84rem;
+    }
+
+    .mono {
+      font-family: ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      word-break: break-all;
+    }
+  </style>
+</head>
+<body>
+  <div class="spark s1"></div>
+  <div class="spark s2"></div>
+  <div class="spark s3"></div>
+
+  <main class="wrap">
+    <section class="hero">
+      <h1>大抽獎</h1>
+      <p class="sub">Seed 決定命運！同一個 seed，永遠抽出同一組結果。</p>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <h2 class="title">參與名單</h2>
+        <label for="names">每行一個名字（空白行會自動忽略）</label>
+        <textarea id="names" placeholder="Alice&#10;Bob&#10;Carol&#10;Chuck&#10;Craig&#10;Dan&#10;Erin&#10;Eve&#10;Faythe"></textarea>
+
+        <div class="row two">
+          <div>
+            <label for="mode">模式</label>
+            <select id="mode">
+              <option value="sort">排序模式（全部排名）</option>
+              <option value="draw">抽籤模式（抽出 N 人）</option>
+            </select>
+          </div>
+          <div>
+            <label for="drawCount">抽出人數 N（抽籤模式）</label>
+            <input id="drawCount" type="number" min="1" value="3" />
+          </div>
+        </div>
+
+        <label for="seed">Seed（自訂隨機字串）</label>
+        <input id="seed" type="text" placeholder="輸入任意字串，例如：alice-2026-lucky" />
+
+        <section class="etherscan-panel" aria-label="RPC 區塊 seed">
+          <div class="etherscan-head">
+            <div>
+              <h3 class="etherscan-title">鏈上 Seed 區（RPC）</h3>
+              <p class="etherscan-hint">直接呼叫 RPC 節點，取得最新區塊 hash 當 seed。</p>
+            </div>
+            <button class="ether fetch-in-panel" id="fetchBlockBtn" type="button">用 RPC 抓取最新區塊當 Seed</button>
+          </div>
+
+          <div class="meta-grid">
+            <div class="meta-item">
+              <label for="rpcEndpoint">RPC Endpoint（必填）</label>
+              <input id="rpcEndpoint" type="url" placeholder="https://1rpc.io/eth" value="https://1rpc.io/eth" required />
+            </div>
+            <div class="meta-item">
+              <label for="latestBlockNumber">最新 Block Number</label>
+              <input id="latestBlockNumber" type="text" readonly placeholder="尚未取得" />
+            </div>
+            <div class="meta-item">
+              <label for="latestBlockHash">最新 Block Hash</label>
+              <input id="latestBlockHash" type="text" readonly placeholder="尚未取得" />
+            </div>
+          </div>
+          <div class="meta-actions">
+            <a id="latestBlockLink" class="meta-link" href="#" target="_blank" rel="noopener noreferrer"></a>
+          </div>
+        </section>
+
+        <div class="btns">
+          <button class="primary cta-run" id="runBtn" type="button">開始抽獎</button>
+          <button class="ghost" id="clearBtn">清空結果</button>
+        </div>
+
+        <div id="status" class="status"></div>
+      </article>
+
+      <article class="card">
+        <div class="btns" style="margin-top: 0; margin-bottom: 12px; justify-content: space-between;">
+          <h2 class="title" style="margin: 0;">抽獎結果</h2>
+          <button class="ghost" id="copyBtn" type="button">複製結果（僅名字）</button>
+        </div>
+        <div id="seedBadge" class="pill" style="display:none;"></div>
+        <ul id="results" class="result-list"></ul>
+        <p class="footer-note">
+          規則：先將姓名按字母序排序，再用 seed 產生可重現亂數做 deterministic shuffle。<br>
+          排序模式顯示完整排名；抽籤模式顯示前 N 名。
+        </p>
+      </article>
+    </section>
+  </main>
+
+  <script>
+    const namesEl = document.getElementById('names');
+    const modeEl = document.getElementById('mode');
+    const drawCountEl = document.getElementById('drawCount');
+    const seedEl = document.getElementById('seed');
+    const rpcEndpointEl = document.getElementById('rpcEndpoint');
+    const latestBlockNumberEl = document.getElementById('latestBlockNumber');
+    const latestBlockHashEl = document.getElementById('latestBlockHash');
+    const latestBlockLinkEl = document.getElementById('latestBlockLink');
+    const runBtn = document.getElementById('runBtn');
+    const copyBtn = document.getElementById('copyBtn');
+    const fetchBlockBtn = document.getElementById('fetchBlockBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const statusEl = document.getElementById('status');
+    const seedBadgeEl = document.getElementById('seedBadge');
+    const resultsEl = document.getElementById('results');
+    let lastResultNames = [];
+    const nameCollator = new Intl.Collator('en', { sensitivity: 'base', numeric: true });
+
+    function setStatus(msg, type) {
+      statusEl.textContent = msg || '';
+      statusEl.className = 'status';
+      if (type) {
+        statusEl.classList.add(type);
+      }
+    }
+
+    function parseNames(raw) {
+      const seen = new Set();
+      const list = [];
+      raw.split(/\r?\n/)
+        .map(v => v.trim())
+        .filter(Boolean)
+        .forEach(name => {
+          if (!seen.has(name)) {
+            seen.add(name);
+            list.push(name);
+          }
+        });
+      return list.sort((a, b) => nameCollator.compare(a, b));
+    }
+
+    function xmur3(str) {
+      let h = 1779033703 ^ str.length;
+      for (let i = 0; i < str.length; i++) {
+        h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
+        h = (h << 13) | (h >>> 19);
+      }
+      return function() {
+        h = Math.imul(h ^ (h >>> 16), 2246822507);
+        h = Math.imul(h ^ (h >>> 13), 3266489909);
+        return (h ^= h >>> 16) >>> 0;
+      };
+    }
+
+    function mulberry32(a) {
+      return function() {
+        let t = (a += 0x6d2b79f5);
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+      };
+    }
+
+    function createSeededRng(seedStr) {
+      const seedFn = xmur3(seedStr);
+      return mulberry32(seedFn());
+    }
+
+    function deterministicShuffle(items, seedStr) {
+      const arr = [...items];
+      const rand = createSeededRng(seedStr);
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(rand() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    }
+
+    function renderResults(items, mode) {
+      lastResultNames = [...items];
+      resultsEl.innerHTML = '';
+      if (!items.length) {
+        const li = document.createElement('li');
+        li.className = 'result-item';
+        li.innerHTML = '<span class="rank">EMPTY</span><span class="name">尚無結果</span>';
+        resultsEl.appendChild(li);
+        return;
+      }
+
+      items.forEach((name, idx) => {
+        const li = document.createElement('li');
+        li.className = 'result-item';
+        li.innerHTML = `
+          <span class="rank">${mode === 'draw' ? 'LUCKY' : '#' + (idx + 1)}</span>
+          <span class="name">${escapeHtml(name)}</span>
+        `;
+        resultsEl.appendChild(li);
+      });
+    }
+
+    function escapeHtml(text) {
+      return text
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function getFinalSeed() {
+      const seed = seedEl.value.trim();
+      if (!seed) {
+        throw new Error('請先輸入 seed，或先使用 RPC 最新 block hash 作為 seed。');
+      }
+      return seed;
+    }
+
+    function getRequiredRpcEndpoint() {
+      const endpoint = rpcEndpointEl.value.trim();
+      if (!endpoint) {
+        rpcEndpointEl.focus();
+        throw new Error('RPC Endpoint 為必填，請先輸入。');
+      }
+      if (!/^https?:\/\//i.test(endpoint)) {
+        rpcEndpointEl.focus();
+        throw new Error('RPC Endpoint 格式錯誤，需以 http:// 或 https:// 開頭。');
+      }
+      return endpoint;
+    }
+
+    async function rpcRequest(endpoint, method, params, id) {
+      const resp = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          jsonrpc: '2.0',
+          method,
+          params,
+          id
+        })
+      });
+
+      if (!resp.ok) {
+        throw new Error('RPC 連線失敗，請檢查 endpoint 是否可用。');
+      }
+
+      const data = await resp.json();
+      if (data.error) {
+        throw new Error(`RPC 錯誤：${data.error.message || 'unknown error'}`);
+      }
+      return data.result;
+    }
+
+    function getExplorerBaseByChainId(chainIdHex) {
+      const chainId = Number.parseInt(chainIdHex || '', 16);
+      const map = {
+        1: 'https://etherscan.io',
+        11155111: 'https://sepolia.etherscan.io',
+        8453: 'https://basescan.org',
+        42161: 'https://arbiscan.io',
+        10: 'https://optimistic.etherscan.io',
+        137: 'https://polygonscan.com',
+        56: 'https://bscscan.com'
+      };
+      return map[chainId] || '';
+    }
+
+    function runLottery() {
+      try {
+        const names = parseNames(namesEl.value);
+        if (names.length === 0) {
+          throw new Error('請先輸入至少一個人名。');
+        }
+
+        const seed = getFinalSeed();
+        const shuffled = deterministicShuffle(names, seed);
+        const mode = modeEl.value;
+
+        let output;
+        if (mode === 'sort') {
+          output = shuffled;
+        } else {
+          const n = Number.parseInt(drawCountEl.value, 10);
+          if (!Number.isFinite(n) || n < 1) {
+            throw new Error('抽出人數 N 需為大於 0 的整數。');
+          }
+          output = shuffled.slice(0, Math.min(n, shuffled.length));
+        }
+
+        renderResults(output, mode);
+        seedBadgeEl.style.display = 'inline-flex';
+        seedBadgeEl.innerHTML = `本次 seed：<span class="mono">${escapeHtml(seed)}</span>`;
+        setStatus('抽獎完成：相同 seed 會得到完全相同的結果。', 'ok');
+      } catch (err) {
+        setStatus(err.message || '執行失敗。', 'error');
+      }
+    }
+
+    async function copyResultNames() {
+      if (!lastResultNames.length) {
+        setStatus('目前沒有可複製的結果，請先抽獎。', 'error');
+        return;
+      }
+
+      const text = lastResultNames.join('\n');
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (err) {
+        const temp = document.createElement('textarea');
+        temp.value = text;
+        temp.setAttribute('readonly', '');
+        temp.style.position = 'absolute';
+        temp.style.left = '-9999px';
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+      }
+
+      setStatus(`已複製 ${lastResultNames.length} 個名字到剪貼簿。`, 'ok');
+    }
+
+    async function fetchLatestBlockFromRpc() {
+      const endpoint = getRequiredRpcEndpoint();
+      setStatus('正在從 RPC 節點取得最新區塊...', '');
+
+      try {
+        const latestHex = await rpcRequest(endpoint, 'eth_blockNumber', [], 1);
+        if (!latestHex || typeof latestHex !== 'string') {
+          throw new Error('無法取得最新區塊高度。');
+        }
+
+        const latestNumber = Number.parseInt(latestHex, 16);
+        if (!Number.isFinite(latestNumber)) {
+          throw new Error('收到無效的區塊高度格式。');
+        }
+
+        const blockData = await rpcRequest(endpoint, 'eth_getBlockByNumber', [latestHex, false], 2);
+        const blockHash = blockData?.hash;
+        if (!blockHash) {
+          throw new Error('取得不到 block hash。');
+        }
+
+        const chainIdHex = await rpcRequest(endpoint, 'eth_chainId', [], 3);
+        const explorerBase = getExplorerBaseByChainId(chainIdHex);
+
+        latestBlockHashEl.value = blockHash;
+        latestBlockNumberEl.value = String(latestNumber);
+        if (explorerBase) {
+          latestBlockLinkEl.href = `${explorerBase}/block/${latestNumber}`;
+          latestBlockLinkEl.textContent = `在區塊瀏覽器查看區塊 #${latestNumber}`;
+          latestBlockLinkEl.style.display = 'inline-flex';
+        } else {
+          latestBlockLinkEl.href = '#';
+          latestBlockLinkEl.textContent = '';
+          latestBlockLinkEl.style.display = 'none';
+        }
+        seedEl.value = blockHash;
+        setStatus('已從 RPC 取得最新 block hash，並自動設為 seed。', 'ok');
+      } catch (err) {
+        latestBlockNumberEl.value = '';
+        latestBlockHashEl.value = '';
+        latestBlockLinkEl.href = '#';
+        latestBlockLinkEl.textContent = '';
+        latestBlockLinkEl.style.display = 'none';
+        setStatus(err.message || '從 RPC 取得區塊資料失敗。', 'error');
+      }
+    }
+
+    runBtn.addEventListener('click', runLottery);
+    copyBtn.addEventListener('click', copyResultNames);
+    fetchBlockBtn.addEventListener('click', fetchLatestBlockFromRpc);
+    clearBtn.addEventListener('click', () => {
+      resultsEl.innerHTML = '';
+      lastResultNames = [];
+      seedBadgeEl.style.display = 'none';
+      setStatus('結果已清空。', '');
+    });
+
+    namesEl.value = ['Alice', 'Bob', 'Carol', 'Chuck', 'Craig', 'Dan', 'Erin', 'Eve', 'Faythe'].join('\n');
+  </script>
+</body>
+</html>
