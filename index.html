@@ -495,6 +495,9 @@
         <h2 class="title">參與名單</h2>
         <label for="names">每行一個名字（空白行會自動忽略）</label>
         <textarea id="names" placeholder="Alice&#10;Bob&#10;Carol&#10;Chuck&#10;Craig&#10;Dan&#10;Erin&#10;Eve&#10;Faythe"></textarea>
+        <div class="btns" style="margin-top: 10px;">
+          <button class="ghost" id="shareBtn" type="button">複製分享連結</button>
+        </div>
 
         <div class="row two">
           <div>
@@ -574,6 +577,7 @@
     const latestBlockHashEl = document.getElementById('latestBlockHash');
     const latestBlockLinkEl = document.getElementById('latestBlockLink');
     const runBtn = document.getElementById('runBtn');
+    const shareBtn = document.getElementById('shareBtn');
     const copyBtn = document.getElementById('copyBtn');
     const fetchBlockBtn = document.getElementById('fetchBlockBtn');
     const clearBtn = document.getElementById('clearBtn');
@@ -604,6 +608,57 @@
           }
         });
       return list.sort((a, b) => nameCollator.compare(a, b));
+    }
+
+    function getNamesFromQueryParams() {
+      const params = new URLSearchParams(window.location.search);
+      const rawNames = params.getAll('names');
+      if (!rawNames.length) {
+        return '';
+      }
+
+      if (rawNames.length === 1) {
+        return rawNames[0]
+          .split(/\r?\n|[,;|]/)
+          .map(value => value.trim())
+          .filter(Boolean)
+          .join('\n');
+      }
+
+      return rawNames
+        .map(value => value.trim())
+        .filter(Boolean)
+        .join('\n');
+    }
+
+    async function copyText(text) {
+      try {
+        await navigator.clipboard.writeText(text);
+      } catch (err) {
+        const temp = document.createElement('textarea');
+        temp.value = text;
+        temp.setAttribute('readonly', '');
+        temp.style.position = 'absolute';
+        temp.style.left = '-9999px';
+        document.body.appendChild(temp);
+        temp.select();
+        document.execCommand('copy');
+        document.body.removeChild(temp);
+      }
+    }
+
+    function buildShareUrl() {
+      const names = parseNames(namesEl.value);
+      if (!names.length) {
+        throw new Error('目前沒有可分享的名單，請先輸入至少一個名字。');
+      }
+
+      const url = new URL(window.location.href);
+      url.search = '';
+      names.forEach(name => {
+        url.searchParams.append('names', name);
+      });
+      return url.toString();
     }
 
     function xmur3(str) {
@@ -773,20 +828,23 @@
 
       const text = lastResultNames.join('\n');
       try {
-        await navigator.clipboard.writeText(text);
+        await copyText(text);
       } catch (err) {
-        const temp = document.createElement('textarea');
-        temp.value = text;
-        temp.setAttribute('readonly', '');
-        temp.style.position = 'absolute';
-        temp.style.left = '-9999px';
-        document.body.appendChild(temp);
-        temp.select();
-        document.execCommand('copy');
-        document.body.removeChild(temp);
+        setStatus('複製結果失敗。', 'error');
+        return;
       }
 
       setStatus(`已複製 ${lastResultNames.length} 個名字到剪貼簿。`, 'ok');
+    }
+
+    async function copyShareLink() {
+      try {
+        const shareUrl = buildShareUrl();
+        await copyText(shareUrl);
+        setStatus('分享連結已複製到剪貼簿。', 'ok');
+      } catch (err) {
+        setStatus(err.message || '產生分享連結失敗。', 'error');
+      }
     }
 
     async function fetchLatestBlockFromRpc() {
@@ -837,6 +895,7 @@
     }
 
     runBtn.addEventListener('click', runLottery);
+    shareBtn.addEventListener('click', copyShareLink);
     copyBtn.addEventListener('click', copyResultNames);
     fetchBlockBtn.addEventListener('click', fetchLatestBlockFromRpc);
     clearBtn.addEventListener('click', () => {
@@ -846,7 +905,8 @@
       setStatus('結果已清空。', '');
     });
 
-    namesEl.value = ['Alice', 'Bob', 'Carol', 'Chuck', 'Craig', 'Dan', 'Erin', 'Eve', 'Faythe'].join('\n');
+    const namesFromQuery = getNamesFromQueryParams();
+    namesEl.value = namesFromQuery || ['Alice', 'Bob', 'Carol', 'Chuck', 'Craig', 'Dan', 'Erin', 'Eve', 'Faythe'].join('\n');
   </script>
 </body>
 </html>
