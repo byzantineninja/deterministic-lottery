@@ -11,6 +11,8 @@
       --bg-a: #070710;
       --bg-b: #1b0e37;
       --bg-c: #0f2a5f;
+      --flare-red: #ff3a2f;
+      --flare-orange: #ff8a00;
       --gold: #ffd166;
       --pink: #ff4d8d;
       --cyan: #38f0ff;
@@ -32,9 +34,9 @@
       font-family: "Chakra Petch", "Noto Sans TC", sans-serif;
       color: var(--ink);
       background:
-        radial-gradient(circle at 15% 10%, rgba(255, 77, 141, 0.28), transparent 40%),
-        radial-gradient(circle at 82% 18%, rgba(56, 240, 255, 0.2), transparent 44%),
-        radial-gradient(circle at 50% 90%, rgba(184, 255, 106, 0.16), transparent 40%),
+        radial-gradient(circle at 18% 12%, rgba(255, 77, 141, 0.2), transparent 42%),
+        radial-gradient(circle at 82% 16%, rgba(56, 240, 255, 0.14), transparent 46%),
+        radial-gradient(circle at 50% 92%, rgba(184, 255, 106, 0.1), transparent 42%),
         linear-gradient(120deg, var(--bg-a), var(--bg-b) 50%, var(--bg-c));
       overflow-x: hidden;
     }
@@ -44,10 +46,11 @@
       width: 340px;
       height: 340px;
       border-radius: 50%;
-      filter: blur(55px);
-      opacity: 0.42;
+      filter: blur(58px);
+      opacity: 0.36;
       z-index: 0;
-      animation: drift 8s ease-in-out infinite alternate;
+      mix-blend-mode: screen;
+      animation: drift 7s ease-in-out infinite alternate;
     }
 
     .spark.s1 {
@@ -59,14 +62,14 @@
     .spark.s2 {
       right: -70px;
       top: 20%;
-      background: #38f0ff;
+      background: #2fd6e3;
       animation-delay: 1.2s;
     }
 
     .spark.s3 {
       bottom: -110px;
       left: 30%;
-      background: #ffd166;
+      background: #ffbf47;
       animation-delay: 2.2s;
     }
 
@@ -82,7 +85,7 @@
     .wrap {
       position: relative;
       z-index: 1;
-      width: min(1040px, 94vw);
+      width: min(1080px, 94vw);
       margin: 24px auto 44px;
       animation: reveal 0.8s ease-out both;
     }
@@ -99,14 +102,25 @@
     }
 
     .hero {
-      background: linear-gradient(135deg, rgba(255, 77, 141, 0.24), rgba(56, 240, 255, 0.2));
-      border: 2px solid rgba(255, 255, 255, 0.25);
+      background:
+        linear-gradient(125deg, rgba(255, 58, 47, 0.25), rgba(255, 77, 141, 0.24) 35%, rgba(56, 240, 255, 0.24) 72%, rgba(255, 209, 102, 0.2));
+      border: 2px solid rgba(255, 255, 255, 0.4);
       border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding: 18px 20px;
+      box-shadow: var(--shadow), 0 0 0 4px rgba(255, 255, 255, 0.08) inset;
+      padding: 20px 20px;
       backdrop-filter: blur(8px);
       position: relative;
       overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(100deg, transparent 0%, rgba(255, 255, 255, 0.26) 48%, transparent 100%);
+      transform: translateX(-120%);
+      animation: heroSweep 3.3s linear infinite;
+      pointer-events: none;
     }
 
     .hero::after {
@@ -120,14 +134,35 @@
       pointer-events: none;
     }
 
+    @keyframes heroSweep {
+      to {
+        transform: translateX(120%);
+      }
+    }
+
     h1 {
       margin: 0;
       font-family: "Bungee", "Chakra Petch", sans-serif;
       letter-spacing: 2px;
       color: #fff3d4;
-      text-shadow: 0 0 16px rgba(255, 209, 102, 0.7);
-      font-size: clamp(1.65rem, 4vw, 2.7rem);
+      text-shadow:
+        0 0 16px rgba(255, 209, 102, 0.7),
+        0 0 34px rgba(255, 58, 47, 0.42),
+        4px 4px 0 rgba(10, 7, 32, 0.8);
+      font-size: clamp(1.8rem, 4.3vw, 3rem);
       line-height: 1.1;
+      transform: rotate(-1.6deg);
+      animation: titleFlicker 2.6s ease-in-out infinite;
+    }
+
+    @keyframes titleFlicker {
+      0%,
+      100% {
+        filter: saturate(1);
+      }
+      50% {
+        filter: saturate(1.28);
+      }
     }
 
     .sub {
@@ -151,12 +186,35 @@
     }
 
     .card {
-      border: 1px solid rgba(255, 255, 255, 0.22);
+      border: 1px solid rgba(255, 255, 255, 0.35);
       border-radius: var(--radius);
-      background: var(--glass);
-      box-shadow: var(--shadow);
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.06));
+      box-shadow: var(--shadow), 0 0 0 1px rgba(255, 255, 255, 0.18) inset;
       padding: 16px;
       backdrop-filter: blur(8px);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      animation: cardSlideIn 0.6s cubic-bezier(.2, .8, .2, 1) both;
+    }
+
+    .card:nth-of-type(2) {
+      animation-delay: 0.12s;
+    }
+
+    @keyframes cardSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(14px) scale(0.98);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .card:hover {
+      transform: translateY(-2px) scale(1.003);
+      box-shadow: 0 24px 66px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.22) inset;
     }
 
     .title {
@@ -233,13 +291,13 @@
     }
 
     button {
-      border: none;
+      border: 1px solid rgba(255, 255, 255, 0.25);
       border-radius: 999px;
       padding: 10px 16px;
       cursor: pointer;
       font-weight: 700;
       letter-spacing: 0.3px;
-      transition: transform 0.15s ease, filter 0.15s ease;
+      transition: transform 0.15s ease, filter 0.15s ease, box-shadow 0.15s ease;
     }
 
     button:hover {
@@ -247,24 +305,80 @@
       filter: saturate(1.1);
     }
 
+    button:active {
+      transform: translateY(0) scale(0.97);
+    }
+
     .primary {
-      background: linear-gradient(90deg, var(--pink), #ff8f45);
+      background: linear-gradient(90deg, var(--pink), var(--flare-orange));
       color: white;
-      box-shadow: 0 8px 24px rgba(255, 77, 141, 0.42);
+      box-shadow: 0 10px 24px rgba(255, 77, 141, 0.42);
     }
 
     .cta-run {
+      position: relative;
+      overflow: hidden;
       width: 100%;
       padding: 14px 18px;
       font-size: 1.05rem;
       letter-spacing: 0.8px;
-      background: linear-gradient(90deg, #ff2f72, #ff9f1c 52%, #ffe66d);
+      background: linear-gradient(95deg, #ff2f72, #ff6200 38%, #ffb703 66%, #ffe66d);
       color: #1f0a00;
       text-shadow: 0 1px 0 rgba(255, 255, 255, 0.3);
       box-shadow:
-        0 14px 28px rgba(255, 77, 141, 0.46),
-        0 0 0 2px rgba(255, 255, 255, 0.2) inset;
+        0 16px 30px rgba(255, 77, 141, 0.46),
+        0 0 0 2px rgba(255, 255, 255, 0.24) inset;
       animation: ctaPulse 2s ease-in-out infinite;
+    }
+
+    .cta-run::after {
+      content: "";
+      position: absolute;
+      top: -20%;
+      left: -35%;
+      width: 28%;
+      height: 140%;
+      background: linear-gradient(180deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.68), rgba(255, 255, 255, 0.1));
+      transform: rotate(18deg);
+      animation: ctaShine 2.2s ease-in-out infinite;
+      pointer-events: none;
+    }
+
+    .cta-run.running {
+      pointer-events: none;
+      animation: ctaPulse 0.9s ease-in-out infinite;
+      filter: saturate(1.2);
+    }
+
+    .cta-run.running::before {
+      content: "";
+      position: absolute;
+      inset: -2px;
+      border-radius: inherit;
+      border: 2px solid rgba(255, 255, 255, 0.6);
+      animation: ringFlash 0.85s ease-out infinite;
+      pointer-events: none;
+    }
+
+    @keyframes ringFlash {
+      from {
+        opacity: 0.85;
+        transform: scale(0.98);
+      }
+      to {
+        opacity: 0;
+        transform: scale(1.06);
+      }
+    }
+
+    @keyframes ctaShine {
+      0% {
+        left: -35%;
+      }
+      58%,
+      100% {
+        left: 125%;
+      }
     }
 
     @keyframes ctaPulse {
@@ -339,10 +453,10 @@
     .etherscan-panel {
       margin-top: 12px;
       border-radius: 16px;
-      border: 1px solid rgba(56, 240, 255, 0.35);
-      background: linear-gradient(145deg, rgba(0, 178, 255, 0.13), rgba(12, 18, 52, 0.5));
+      border: 1px solid rgba(56, 240, 255, 0.5);
+      background: linear-gradient(145deg, rgba(0, 178, 255, 0.16), rgba(12, 18, 52, 0.52));
       padding: 12px;
-      box-shadow: 0 8px 22px rgba(0, 178, 255, 0.18);
+      box-shadow: 0 10px 24px rgba(0, 178, 255, 0.2), 0 0 20px rgba(56, 240, 255, 0.18);
     }
 
     .etherscan-head {
@@ -425,19 +539,72 @@
       gap: 8px;
     }
 
+    .result-list.is-drawing {
+      position: relative;
+      min-height: 120px;
+      overflow: hidden;
+    }
+
+    .result-list.is-drawing::before {
+      content: "抽獎中...";
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      border-radius: 14px;
+      background: linear-gradient(125deg, rgba(255, 77, 141, 0.16), rgba(56, 240, 255, 0.2));
+      border: 1px solid rgba(255, 255, 255, 0.24);
+      font-family: "Bungee", "Chakra Petch", sans-serif;
+      letter-spacing: 1px;
+      color: #fff7d4;
+      text-shadow: 0 0 14px rgba(255, 209, 102, 0.42);
+      animation: loadingSweep 0.9s linear infinite;
+      z-index: 2;
+    }
+
+    @keyframes loadingSweep {
+      0% {
+        background-position: 0% 50%;
+      }
+      100% {
+        background-position: 200% 50%;
+      }
+    }
+
     .result-item {
       padding: 10px 12px;
       border-radius: 12px;
-      background: linear-gradient(135deg, rgba(255, 209, 102, 0.2), rgba(255, 77, 141, 0.18));
+      background: linear-gradient(118deg, rgba(255, 209, 102, 0.3), rgba(255, 77, 141, 0.24));
       border: 1px solid rgba(255, 255, 255, 0.22);
       display: flex;
       justify-content: space-between;
       align-items: center;
       animation: pop 0.3s ease both;
+      transform: skewX(-4deg);
+    }
+
+    .result-item.first-draw {
+      animation: crownPop 0.5s cubic-bezier(.2, .9, .2, 1) both;
+      box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25) inset, 0 12px 24px rgba(255, 209, 102, 0.28);
+    }
+
+    @keyframes crownPop {
+      0% {
+        transform: skewX(-4deg) scale(0.94);
+        filter: brightness(1);
+      }
+      60% {
+        transform: skewX(-4deg) scale(1.04);
+        filter: brightness(1.18);
+      }
+      100% {
+        transform: skewX(-4deg) scale(1);
+        filter: brightness(1);
+      }
     }
 
     .result-item:nth-child(2n) {
-      background: linear-gradient(135deg, rgba(56, 240, 255, 0.2), rgba(255, 255, 255, 0.1));
+      background: linear-gradient(118deg, rgba(56, 240, 255, 0.28), rgba(255, 255, 255, 0.12));
     }
 
     @keyframes pop {
@@ -456,6 +623,7 @@
       color: #fff2be;
       font-size: 0.94rem;
       min-width: 66px;
+      transform: skewX(4deg);
     }
 
     .name {
@@ -465,6 +633,7 @@
       color: #f8fcff;
       overflow-wrap: anywhere;
       margin-left: 8px;
+      transform: skewX(4deg);
     }
 
     .footer-note {
@@ -476,6 +645,30 @@
     .mono {
       font-family: ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
       word-break: break-all;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+
+    @media (max-width: 540px) {
+      h1 {
+        transform: none;
+      }
+
+      .result-item {
+        transform: none;
+      }
+
+      .rank,
+      .name {
+        transform: none;
+      }
     }
   </style>
 </head>
@@ -712,6 +905,10 @@
       items.forEach((name, idx) => {
         const li = document.createElement('li');
         li.className = 'result-item';
+        li.style.animationDelay = `${Math.min(idx * 70, 560)}ms`;
+        if (mode === 'draw' && idx === 0) {
+          li.classList.add('first-draw');
+        }
         li.innerHTML = `
           <span class="rank">${mode === 'draw' ? 'LUCKY' : '#' + (idx + 1)}</span>
           <span class="name">${escapeHtml(name)}</span>
@@ -789,14 +986,19 @@
       return map[chainId] || '';
     }
 
-    function runLottery() {
+    async function runLottery() {
       try {
         const names = parseNames(namesEl.value);
         if (names.length === 0) {
           throw new Error('請先輸入至少一個人名。');
         }
 
+        runBtn.classList.add('running');
+        runBtn.disabled = true;
+        resultsEl.classList.add('is-drawing');
+
         const seed = getFinalSeed();
+        await new Promise(resolve => setTimeout(resolve, 620));
         const shuffled = deterministicShuffle(names, seed);
         const mode = modeEl.value;
 
@@ -817,6 +1019,10 @@
         setStatus('抽獎完成：相同 seed 會得到完全相同的結果。', 'ok');
       } catch (err) {
         setStatus(err.message || '執行失敗。', 'error');
+      } finally {
+        runBtn.classList.remove('running');
+        runBtn.disabled = false;
+        resultsEl.classList.remove('is-drawing');
       }
     }
 
