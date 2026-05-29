@@ -504,27 +504,55 @@
       margin-top: 0;
     }
 
-    .meta-link {
-      display: none;
-      margin-top: 8px;
-      text-decoration: none;
-      color: #ecf9ff;
-      background: rgba(255, 255, 255, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.24);
-      border-radius: 999px;
-      padding: 6px 10px;
-      font-size: 0.84rem;
-      width: fit-content;
+    .explorer-card-wrap {
+      padding: 6px;
     }
 
-    .meta-link:hover {
-      background: rgba(255, 255, 255, 0.2);
+    .explorer-card {
+      width: 100%;
+      text-align: left;
+      border-radius: 12px;
+      border: 1px solid rgba(56, 240, 255, 0.38);
+      background: linear-gradient(140deg, rgba(56, 240, 255, 0.18), rgba(255, 255, 255, 0.06));
+      color: #eafcff;
+      padding: 10px;
+      display: grid;
+      gap: 6px;
+      cursor: pointer;
+      box-shadow: 0 8px 18px rgba(0, 178, 255, 0.2);
     }
 
-    .meta-actions {
-      margin-top: 8px;
-      display: flex;
-      justify-content: flex-start;
+    .explorer-card:hover {
+      border-color: rgba(56, 240, 255, 0.75);
+      box-shadow: 0 10px 24px rgba(0, 178, 255, 0.28);
+      transform: translateY(-1px);
+    }
+
+    .explorer-card:disabled {
+      cursor: not-allowed;
+      opacity: 0.75;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .explorer-line {
+      display: grid;
+      gap: 2px;
+    }
+
+    .explorer-label {
+      font-size: 0.76rem;
+      opacity: 0.85;
+      letter-spacing: 0.3px;
+    }
+
+    .explorer-value {
+      font-size: 0.86rem;
+      font-family: ui-monospace, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      line-height: 1.25;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .fetch-in-panel {
@@ -546,7 +574,7 @@
 
     @media (min-width: 860px) {
       .meta-grid {
-        grid-template-columns: 1.3fr 1fr 1fr;
+        grid-template-columns: 1.2fr 1fr;
       }
     }
 
@@ -763,17 +791,18 @@
               <label for="rpcEndpoint">RPC Endpoint（必填）</label>
               <input id="rpcEndpoint" type="url" placeholder="https://1rpc.io/eth" value="https://1rpc.io/eth" required />
             </div>
-            <div class="meta-item">
-              <label for="latestBlockNumber">最新 Block Number</label>
-              <input id="latestBlockNumber" type="text" readonly placeholder="尚未取得" />
+            <div class="meta-item explorer-card-wrap">
+              <button id="latestBlockCard" class="explorer-card" type="button" disabled title="尚未取得區塊資料">
+                <span class="explorer-line">
+                  <span class="explorer-label">最新 Block Number</span>
+                  <span id="latestBlockNumberText" class="explorer-value">尚未取得</span>
+                </span>
+                <span class="explorer-line">
+                  <span class="explorer-label">最新 Block Hash</span>
+                  <span id="latestBlockHashText" class="explorer-value">尚未取得</span>
+                </span>
+              </button>
             </div>
-            <div class="meta-item">
-              <label for="latestBlockHash">最新 Block Hash</label>
-              <input id="latestBlockHash" type="text" readonly placeholder="尚未取得" />
-            </div>
-          </div>
-          <div class="meta-actions">
-            <a id="latestBlockLink" class="meta-link" href="#" target="_blank" rel="noopener noreferrer"></a>
           </div>
         </section>
 
@@ -808,9 +837,9 @@
     const drawCountEl = document.getElementById('drawCount');
     const seedEl = document.getElementById('seed');
     const rpcEndpointEl = document.getElementById('rpcEndpoint');
-    const latestBlockNumberEl = document.getElementById('latestBlockNumber');
-    const latestBlockHashEl = document.getElementById('latestBlockHash');
-    const latestBlockLinkEl = document.getElementById('latestBlockLink');
+    const latestBlockCardEl = document.getElementById('latestBlockCard');
+    const latestBlockNumberTextEl = document.getElementById('latestBlockNumberText');
+    const latestBlockHashTextEl = document.getElementById('latestBlockHashText');
     const runBtn = document.getElementById('runBtn');
     const shareBtn = document.getElementById('shareBtn');
     const copyBtn = document.getElementById('copyBtn');
@@ -819,8 +848,17 @@
     const statusEl = document.getElementById('status');
     const seedBadgeEl = document.getElementById('seedBadge');
     const resultsEl = document.getElementById('results');
+    let latestExplorerBlockUrl = '';
     let lastResultNames = [];
     const nameCollator = new Intl.Collator('en', { sensitivity: 'base', numeric: true });
+
+    function openExplorerBlockPage() {
+      if (!latestExplorerBlockUrl) {
+        setStatus('目前無可用的區塊瀏覽器連結。', 'error');
+        return;
+      }
+      window.open(latestExplorerBlockUrl, '_blank', 'noopener,noreferrer');
+    }
 
     function setStatus(msg, type) {
       statusEl.textContent = msg || '';
@@ -1119,25 +1157,25 @@
         const chainIdHex = await rpcRequest(endpoint, 'eth_chainId', [], 3);
         const explorerBase = getExplorerBaseByChainId(chainIdHex);
 
-        latestBlockHashEl.value = blockHash;
-        latestBlockNumberEl.value = String(latestNumber);
+        latestBlockHashTextEl.textContent = blockHash;
+        latestBlockNumberTextEl.textContent = String(latestNumber);
         if (explorerBase) {
-          latestBlockLinkEl.href = `${explorerBase}/block/${latestNumber}`;
-          latestBlockLinkEl.textContent = `在區塊瀏覽器查看區塊 #${latestNumber}`;
-          latestBlockLinkEl.style.display = 'inline-flex';
+          latestExplorerBlockUrl = `${explorerBase}/block/${latestNumber}`;
+          latestBlockCardEl.disabled = false;
+          latestBlockCardEl.title = '點擊可開啟區塊瀏覽器';
         } else {
-          latestBlockLinkEl.href = '#';
-          latestBlockLinkEl.textContent = '';
-          latestBlockLinkEl.style.display = 'none';
+          latestExplorerBlockUrl = '';
+          latestBlockCardEl.disabled = true;
+          latestBlockCardEl.title = '目前鏈別未設定對應瀏覽器';
         }
         seedEl.value = blockHash;
         setStatus('已從 RPC 取得最新 block hash，並自動設為 seed。', 'ok');
       } catch (err) {
-        latestBlockNumberEl.value = '';
-        latestBlockHashEl.value = '';
-        latestBlockLinkEl.href = '#';
-        latestBlockLinkEl.textContent = '';
-        latestBlockLinkEl.style.display = 'none';
+        latestBlockNumberTextEl.textContent = '尚未取得';
+        latestBlockHashTextEl.textContent = '尚未取得';
+        latestExplorerBlockUrl = '';
+        latestBlockCardEl.disabled = true;
+        latestBlockCardEl.title = '尚未取得區塊資料';
         setStatus(err.message || '從 RPC 取得區塊資料失敗。', 'error');
       }
     }
@@ -1146,6 +1184,7 @@
     shareBtn.addEventListener('click', copyShareLink);
     copyBtn.addEventListener('click', copyResultNames);
     fetchBlockBtn.addEventListener('click', fetchLatestBlockFromRpc);
+    latestBlockCardEl.addEventListener('click', openExplorerBlockPage);
     clearBtn.addEventListener('click', () => {
       resultsEl.innerHTML = '';
       lastResultNames = [];
